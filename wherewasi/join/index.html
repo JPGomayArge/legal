@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Join a game · Where Was I</title>
+<meta name="description" content="An invite to guess where our photos were taken.">
+<meta property="og:title" content="Join my game · Where Was I">
+<meta property="og:description" content="Guess where our photos were taken. Tap to open the app.">
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #F3EDE1; --surface: #FBF8F1; --raised: #EAE2D3; --ink: #1F2B25; --muted: #667065;
+    --primary: #3E6B54; --on-primary: #FBF8F1; --guess: #C8623E; --link: #3E6B54;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #07100C; --surface: #0D1913; --raised: #15251C; --ink: #F3ECDD; --muted: #93A195;
+      --primary: #3F775B; --on-primary: #FBF8F1; --guess: #E47B52; --link: #8FCBA9;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); }
+  body {
+    min-height: 100vh; min-height: 100dvh;
+    font: 17px/1.5 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: max(24px, env(safe-area-inset-top)) 20px max(28px, env(safe-area-inset-bottom));
+  }
+  main { width: 100%; max-width: 26rem; margin: 0 auto; }
+  .app { display: flex; align-items: center; gap: 10px; color: var(--muted); font-weight: 600; font-size: 15px; }
+  .pin { width: 18px; height: 18px; border-radius: 50% 50% 50% 3px; transform: rotate(-45deg); background: var(--guess); flex: none; }
+  h1 { font-size: 30px; line-height: 1.15; margin: 14px 0 8px; letter-spacing: -0.01em; }
+  .lead { margin: 0 0 28px; color: var(--muted); }
+  .card { background: var(--surface); border-radius: 22px; padding: 22px 20px 20px; text-align: center; }
+  .label { font-size: 14px; font-weight: 600; color: var(--muted); }
+  .code { font-size: 52px; font-weight: 800; letter-spacing: 0.18em; margin: 4px 0 2px 0.18em; font-variant-numeric: tabular-nums; }
+  .copy { appearance: none; border: 0; background: none; color: var(--link); font: inherit; font-size: 15px; font-weight: 700; padding: 8px 12px; cursor: pointer; }
+  .open {
+    display: flex; align-items: center; justify-content: center; min-height: 56px; margin-top: 18px;
+    border-radius: 999px; background: var(--primary); color: var(--on-primary);
+    font-weight: 700; font-size: 18px; text-decoration: none;
+  }
+  .open:focus-visible, .copy:focus-visible { outline: 3px solid var(--guess); outline-offset: 3px; }
+  .help { margin: 24px 4px 0; font-size: 15px; color: var(--muted); }
+  .help p { margin: 0 0 10px; }
+  .bad .card, .bad .open { display: none; }
+</style>
+</head>
+<body>
+<main id="page">
+  <div class="app"><span class="pin" aria-hidden="true"></span><span>Where Was I</span></div>
+  <h1 id="title">You are invited to a game</h1>
+  <p class="lead" id="lead">Guess where our photos were taken.</p>
+  <div class="card">
+    <div class="label" id="codeLabel">Invite code</div>
+    <div class="code" id="code" aria-live="polite"></div>
+    <button class="copy" id="copy" type="button">Copy code</button>
+  </div>
+  <a class="open" id="open" href="wherewasi://">Open in Where Was I</a>
+  <div class="help">
+    <p id="manual">If nothing happens, open the app, tap Play with friends and type the code.</p>
+    <p id="noApp">No app yet? It is still in testing: ask whoever sent you this for an invite.</p>
+  </div>
+</main>
+<script>
+(function () {
+  var T = {
+    en: { title: 'You are invited to a game', lead: 'Guess where our photos were taken.', codeLabel: 'Invite code', copy: 'Copy code', copied: 'Copied', open: 'Open in Where Was I', button: 'Play with friends', manual: 'If nothing happens, open the app, tap {b} and type the code.', noApp: 'No app yet? It is still in testing: ask whoever sent you this for an invite.', bad: 'This invite link is incomplete. Ask for the code instead.' },
+    es: { title: 'Te invitaron a una partida', lead: 'Adivina dónde tomamos nuestras fotos.', codeLabel: 'Código de invitación', copy: 'Copiar código', copied: 'Copiado', open: 'Abrir en Where Was I', button: 'Jugar con amigos', manual: 'Si no pasa nada, abre la app, toca {b} y escribe el código.', noApp: '¿Aún no tienes la app? Está en pruebas: pídele una invitación a quien te mandó esto.', bad: 'Este enlace de invitación está incompleto. Pide el código.' },
+    pt: { title: 'Você foi convidado para uma partida', lead: 'Adivinhe onde nossas fotos foram tiradas.', codeLabel: 'Código do convite', copy: 'Copiar código', copied: 'Copiado', open: 'Abrir no Where Was I', button: 'Jogar com amigos', manual: 'Se nada acontecer, abra o app, toque em {b} e digite o código.', noApp: 'Ainda não tem o app? Ele está em testes: peça um convite a quem te mandou isto.', bad: 'Este link de convite está incompleto. Peça o código.' },
+    fr: { title: 'Tu es invité à une partie', lead: 'Devine où nos photos ont été prises.', codeLabel: 'Code d’invitation', copy: 'Copier le code', copied: 'Copié', open: 'Ouvrir dans Where Was I', button: 'Jouer entre amis', manual: 'Si rien ne se passe, ouvre l’app, touche {b} et saisis le code.', noApp: 'Pas encore l’app ? Elle est en test : demande une invitation à la personne qui t’a envoyé ceci.', bad: 'Ce lien d’invitation est incomplet. Demande le code.' },
+    it: { title: 'Sei invitato a una partita', lead: 'Indovina dove sono state scattate le nostre foto.', codeLabel: 'Codice di invito', copy: 'Copia il codice', copied: 'Copiato', open: 'Apri in Where Was I', button: 'Gioca con gli amici', manual: 'Se non succede niente, apri l’app, tocca {b} e inserisci il codice.', noApp: 'Non hai ancora l’app? È in fase di test: chiedi un invito a chi ti ha mandato questo.', bad: 'Questo link di invito è incompleto. Chiedi il codice.' },
+    de: { title: 'Du bist zu einem Spiel eingeladen', lead: 'Rate, wo unsere Fotos entstanden sind.', codeLabel: 'Einladungscode', copy: 'Code kopieren', copied: 'Kopiert', open: 'In Where Was I öffnen', button: 'Mit Freunden spielen', manual: 'Passiert nichts? Öffne die App, tippe auf „{b}“ und gib den Code ein.', noApp: 'Noch keine App? Sie ist noch im Test: Bitte die Person, die dir das geschickt hat, um eine Einladung.', bad: 'Dieser Einladungslink ist unvollständig. Frag nach dem Code.' }
+  };
+  var langs = (navigator.languages || [navigator.language || 'en']).map(function (l) { return String(l).slice(0, 2).toLowerCase(); });
+  var lang = 'en';
+  for (var i = 0; i < langs.length; i++) if (T[langs[i]]) { lang = langs[i]; break; }
+  var t = T[lang];
+  document.documentElement.lang = lang;
+
+  var raw = (new URLSearchParams(location.search).get('c') || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  var ok = /^[ABCDEFGHJKMNPQRSTUVWXYZ23456789]{5}$/.test(raw);
+  var $ = function (id) { return document.getElementById(id); };
+  $('title').textContent = t.title;
+  $('lead').textContent = ok ? t.lead : t.bad;
+  $('codeLabel').textContent = t.codeLabel;
+  $('copy').textContent = t.copy;
+  $('open').textContent = t.open;
+  $('manual').textContent = t.manual.replace('{b}', t.button);
+  $('noApp').textContent = t.noApp;
+  document.title = t.title + ' · Where Was I';
+  if (!ok) { $('page').className = 'bad'; return; }
+  $('code').textContent = raw;
+  $('open').href = 'wherewasi://join/' + raw;
+  $('copy').addEventListener('click', function () {
+    var done = function () { $('copy').textContent = t.copied; setTimeout(function () { $('copy').textContent = t.copy; }, 1800); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(raw).then(done, function () {});
+  });
+})();
+</script>
+</body>
+</html>
